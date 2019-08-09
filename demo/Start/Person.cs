@@ -2,71 +2,41 @@ namespace Demo.Start
 {
     public class Person
     {
-        private int _id;
-        private string _firstName;
-        private string _lastName;
-
-        public Person()
-        {
-            Id = 0;
-        }
-
-        public Person(string name)
-        {
-            ParseName(name);
-        }
-
-        public Person(int id, string name) : this(name)
-        {
-            Id = id;
-        }
-
+        private int _id = 0;
         public int Id
         {
             get
             {
                 return _id;
             }
-            set
-            {
-                _id = value;
-            }
         }
 
-        public string FirstName
-        {
-            get
-            {
-                return _firstName;
-            }
-            set
-            {
-                _firstName = value;
-            }
-        }
-
-        public string LastName
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string FullName
         {
             get 
-            { 
-                return _lastName;
-            }
-            set
             {
-                _lastName = value;
+                return string.Format("{0}, {1}", LastName, FirstName);
             }
         }
 
-        public void ParseName(string name)
+        public Person(string name)
         {
-            var nameParts = name.Split(' ');
-            FirstName = nameParts[0];
-            LastName = nameParts[1];
+            string firstName, lastName;
+            name.ParseName(out firstName, out lastName);
+            FirstName = firstName;
+            LastName = lastName;
+        }
+
+        public Person(int id, string name) : this(name)
+        {
+            _id = id;
         }
 
         public override string ToString() 
         {
-            return string.Format("{0}, {1}", LastName, FirstName);
+            return FullName;            
         }
     }
 }

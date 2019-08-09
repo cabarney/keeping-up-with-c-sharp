@@ -2,49 +2,31 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Demo.Start
+namespace Demo.Finish
 {
-    #nullable disable
-
     public class Employee : Person
     {
-        public Employee(int id, string name, string hireDate) : base(id, name) 
-        {
-            DateTime parsedDate;
-            if(DateTime.TryParse(hireDate, out parsedDate))
-            {
-                HireDate = parsedDate;
-            }
-        }
+        public Employee(int id, string name, string hireDate) : base(id, name) => 
+            HireDate = DateTime.TryParse(hireDate, out var parsedDate) ? parsedDate : default;
 
         public DateTime HireDate { get; set; }
-
         public TimeSpan TimeWithCompany => DateTime.Now - HireDate;
-
         public int? ManagerId { get; set; }
-        public Manager Manager { get; set; }
+        public Manager? Manager { get; set; }
 
-        public override string ToString()
-        {
-            return string.Format("{0} ( Hired {1:MM/dd/yyyy}, Manager: {2})", FullName, HireDate, Manager.FullName);
-        }
+        public override string ToString() => $"{FullName} ( Hired {HireDate:MM/dd/yyyy}, Manager: {Manager?.FullName ?? "None"} )";
     }
 
     public class Manager : Employee
     {
         public Manager(int id, string name, string hireDate) : base(id, name, hireDate) { }
-
-        public List<Employee> DirectReports { get; set; }
-
-        public IEnumerable<TechnicalSkill> TeamSkills() 
-        {
-            if(DirectReports == null) throw new InvalidOperationException();
-            
-            return DirectReports?.Where(x=>x.GetType() == typeof(SoftwareEngineer))
+        
+        public List<Employee> DirectReports { get; set; } = new List<Employee>();
+        public IEnumerable<TechnicalSkill> TeamSkills() =>
+            DirectReports?.Where(x=>x.GetType() == typeof(SoftwareEngineer))
                 .Select(x => ((SoftwareEngineer)x).Skill)
                 .Distinct()
-                .ToList();
-        }
+                .ToList() ?? throw new InvalidOperationException();
     }
 
     public class SoftwareEngineer : Employee
@@ -77,6 +59,4 @@ namespace Demo.Start
         Whitespace,
         SQL
     }
-
-    #nullable restore
 }

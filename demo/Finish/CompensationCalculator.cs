@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Demo.Start
+namespace Demo.Finish
 {
-    #nullable disable
-
     public class CompensationCalculator
     {
         private readonly IEmployeeService _employeeRepository;
@@ -23,10 +21,10 @@ namespace Demo.Start
 
         public (int salary, int bonus) GetCompensation(Employee employee) => (CalculateSalary(employee), CalculateBonus(employee));
 
-        public int CalculateTeamTotalCompensation(int managerId)
+        public async Task<int> CalculateTeamTotalCompensation(int managerId)
         {
             var total = 0;
-            foreach( var employee in _employeeRepository.GetDirectReports(managerId))
+            await foreach( var employee in _employeeRepository.GetDirectReportsAsync(managerId))
             {
                 var comp = GetCompensation(employee);
                 total = total + comp.salary + comp.bonus;
@@ -37,42 +35,46 @@ namespace Demo.Start
         private const int BaseSalary = 90000;
         private int CalculateSalary(Employee employee)
         {
-            var salary = BaseSalary;
             var yearsOnJob = (int)(employee.TimeWithCompany.TotalDays / 365);
 
-            if(employee.GetType() == typeof(Manager))
+            var yearlyMultiplier = employee switch
             {
-                var manager = employee as Manager;
-                salary += yearsOnJob * 5000;
-                if(manager.DirectReports.Count > 5)
-                    salary += 10000;
-            }
-            else if (employee.GetType() == typeof(SoftwareEngineer))
-            {
-                var engineer = employee as SoftwareEngineer;
-                salary += yearsOnJob * 4000;
-                switch (engineer.Skill)
-                {
-                    case TechnicalSkill.CSharp:
-                        salary += 20000;
-                        break;
-                    case TechnicalSkill.VisualBasic:
-                        salary -= 5000;
-                        break;
-                    default:
-                        salary += 10000;
-                        break;
-                }
-            }
-            else if (employee.GetType() == typeof(BusinessAnalyst))
-            {
-                var ba = employee as BusinessAnalyst;
-                salary += yearsOnJob * 3000;
-                if(ba.Area == BusinessArea.ThermonuclearWarfare)
-                    salary += 25000;
-            }
+                Manager _ => 5000,
+                SoftwareEngineer _ => 4000,
+                BusinessAnalyst _ => 3000,
+                _ => 0
+            };
 
-            return salary;
+            return BaseSalary + yearlyMultiplier * yearsOnJob + employee switch
+            {
+                Manager manager when manager.DirectReports.Count > 5 => 10000,
+                SoftwareEngineer {Skill: TechnicalSkill.CSharp} => 20000,
+                SoftwareEngineer {Skill: TechnicalSkill.VisualBasic} => -5000,
+                SoftwareEngineer {} => 10000,
+                BusinessAnalyst {Area : BusinessArea.ThermonuclearWarfare} => 25000,
+                _ => 0
+            };
+
+            #region step1
+            // switch(employee)
+            // {
+            //     case Manager manager when manager.DirectReports.Count > 5:
+            //         salary += 10000;
+            //     break;
+            //     case SoftwareEngineer engineer:
+            //         salary += engineer switch
+            //         {
+            //             {Skill : TechnicalSkill.CSharp} => 20000,
+            //             {Skill : TechnicalSkill.JavaScript} => 10000,
+            //             _ => -5000
+            //         };
+            //     break;
+            //     case BusinessAnalyst ba when ba.Area == BusinessArea.ThermonuclearWarfare:
+            //             salary += 25000;
+            //     break;
+            // }
+            // return (int)salary;
+            #endregion
         }
 
         private int CalculateBonus(Employee employee)
@@ -80,9 +82,8 @@ namespace Demo.Start
             var years = (int)(employee.TimeWithCompany.TotalDays / 365);
             var bonus = CalculateYearlyBonus(years);
 
-            if(employee.GetType() == typeof(Manager))
+            if(employee is Manager manager)
             {
-                var manager = employee as Manager;
                 bonus += manager.DirectReports.Count * 5000;
             }         
             
@@ -97,6 +98,4 @@ namespace Demo.Start
             return 0;            
         }
     }
-
-    #nullable restore
 }

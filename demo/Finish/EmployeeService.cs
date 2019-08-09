@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Demo.Start
+namespace Demo.Finish
 {
     public interface IEmployeeService
     {
         Employee GetEmployee(int id);
         IEnumerable<Employee> GetDirectReports(int managerId);
+        async IAsyncEnumerable<Employee> GetDirectReportsAsync(int managerId) 
+        {
+            foreach(var emp in GetDirectReports(managerId)) yield return await Task.FromResult(emp);
+        }
     }
 
     public class EmployeeService : IEmployeeService
@@ -24,6 +28,16 @@ namespace Demo.Start
         {
             var ids = _employees.Where(x=>x.ManagerId == managerId).Select(x=>x.Id);
             Task.Delay(100);
+            foreach(var id in ids)
+            {
+                yield return GetEmployee(id);
+            }
+        }
+
+        public async IAsyncEnumerable<Employee> GetDirectReportsAsync(int managerId)
+        {
+            var ids = _employees.Where(x=>x.ManagerId == managerId).Select(x=>x.Id);
+            await Task.Delay(100);
             foreach(var id in ids)
             {
                 yield return GetEmployee(id);
@@ -46,6 +60,6 @@ namespace Demo.Start
             new BusinessAnalyst(12, "Agent Smith", "4/16/2016") { ManagerId = 6, Area = BusinessArea.SalesSystem },
             new SoftwareEngineer(13, "Donald Knuth", "3/25/2017") { ManagerId = 8, Skill = TechnicalSkill.JavaScript},
             new BusinessAnalyst(14, "Kevin Flynn", "5/24/2018") { ManagerId = 6, Area = BusinessArea.OrderFulfillment},
-        };        
+        };            
     }
 }
