@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 namespace Demo.Finish
 {
+    
     public class CompensationCalculator
     {
         private readonly IEmployeeService _employeeRepository;

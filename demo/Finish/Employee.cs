@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace Demo.Finish
 {
+    #nullable enable
     public class Employee : Person
     {
         public Employee(int id, string name, string hireDate) : base(id, name) => 
@@ -59,4 +60,5 @@ namespace Demo.Finish
         Whitespace,
         SQL
     }
+    #nullable restore
 }

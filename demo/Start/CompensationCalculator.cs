@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 
 namespace Demo.Start
 {
-    #nullable disable
-
     public class CompensationCalculator
     {
         private readonly IEmployeeService _employeeRepository;
@@ -97,6 +95,4 @@ namespace Demo.Start
             return 0;            
         }
     }
-
-    #nullable restore
 }
