@@ -2,6 +2,19 @@ namespace Demo.Start
 {
     public class Person
     {
+        public Person(string name)
+        {
+            string firstName, lastName;
+            name.ParseName(out firstName, out lastName);
+            FirstName = firstName;
+            LastName = lastName;
+        }
+
+        public Person(int id, string name) : this(name)
+        {
+            _id = id;
+        }
+
         private int _id = 0;
         public int Id
         {
@@ -19,19 +32,6 @@ namespace Demo.Start
             {
                 return string.Format("{0}, {1}", LastName, FirstName);
             }
-        }
-
-        public Person(string name)
-        {
-            string firstName, lastName;
-            name.ParseName(out firstName, out lastName);
-            FirstName = firstName;
-            LastName = lastName;
-        }
-
-        public Person(int id, string name) : this(name)
-        {
-            _id = id;
         }
 
         public override string ToString() 
