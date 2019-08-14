@@ -54,27 +54,6 @@ namespace Demo.Finish
                 BusinessAnalyst {Area : BusinessArea.ThermonuclearWarfare} => 25000,
                 _ => 0
             };
-
-            #region step1
-            // switch(employee)
-            // {
-            //     case Manager manager when manager.DirectReports.Count > 5:
-            //         salary += 10000;
-            //     break;
-            //     case SoftwareEngineer engineer:
-            //         salary += engineer switch
-            //         {
-            //             {Skill : TechnicalSkill.CSharp} => 20000,
-            //             {Skill : TechnicalSkill.JavaScript} => 10000,
-            //             _ => -5000
-            //         };
-            //     break;
-            //     case BusinessAnalyst ba when ba.Area == BusinessArea.ThermonuclearWarfare:
-            //             salary += 25000;
-            //     break;
-            // }
-            // return (int)salary;
-            #endregion
         }
 
         private int CalculateBonus(Employee employee)
